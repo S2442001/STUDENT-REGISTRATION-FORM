@@ -1,0 +1,169 @@
+<html lang="en">
+    <head>
+        <title> MICRO-PROJECT </title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet"
+              href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <script
+        src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script
+        src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    </head>
+    <body>
+        <div class="container">
+            <h2>Student Registration form</h2>
+            <form id="Form" method="post">
+                <div class="form-group">
+                    <label for="Id">Roll No:</label> <label id="IdMsg">
+                        </label>
+                    <input type="text" class="form-control" name="Id" id="Id"
+                           placeholder="Enter Student ID" required="">
+                </div>
+                <div class="form-group">
+                    <label for="Name">Student Name:</label>
+                    <input type="text" class="form-control" id="Name"
+                           placeholder="Enter Student Name" name="empName">
+                </div>
+                <div class="form-group">
+                    <label for="Class">Student Class:</label>
+                    <input type="text" class="form-control" id="class"
+                           placeholder="Enter Student  class" name="class">
+                </div>
+                <div class="form-group">
+                    <label for="Bdate"> Student Birth Date:</label>
+                    <input type="text" class="form-control" id="Bdate"
+                           placeholder="Enter Student BirthDate" name="BirthDate">
+                </div>
+                <div class="form-group">
+                    <label for="Address"> Student Address:</label>
+                    <input type="text" class="form-control" id="Add"
+                           placeholder="Enter Student Address" name="Address">
+                </div>
+                <div class="form-group">
+                    <label for="edate"> Student Enrollment Date:</label>
+                    <input type="text" class="form-control" id="edate"
+                           placeholder="Enter Student Enollment date" name="edate">
+                </div>
+                <input type="button" class="btn btn-primary" id="empSave" value="Save"
+                       onclick="saveEmployee();">
+                 <input type="button" class="btn btn-primary" id="reset" value="Reset"
+                       onclick="resetForm();">
+                 <input type="Submit" class="btn btn-primary" id="submit" value="submit"
+                    >
+            </form>
+        </div>
+
+        <script>
+            function validateAndGetFormData() {
+                var IdVar = $("#Id").val();
+                if (IdVar=== "") {
+                    alert(" ID Required Value");
+                    $("#Id").focus();
+                    return "";
+                }
+                var NameVar = $("#Name").val();
+                if (NameVar === "") {
+                    alert("Name is Required Value");
+                    $("#Name").focus();
+                    return "";
+                }
+                var classVar = $("#class").val();
+                if (classVar === "") {
+                    alert("Classis Required Value");
+                    $("#class").focus();
+                    return "";
+                }
+                var BirthVar = $("#Bdate").val();
+                if (BirthVar === "") {
+                    alert("Birth Date is Required Value");
+                    $("#Bdate").focus();
+                    return "";
+                }
+                var AddVar = $("#Add").val();
+                if (AddVar === "") {
+                    alert("Address is Required Value");
+                    $("#Add").focus();
+                    return "";
+                }
+                var EnrolVar = $("#edate").val();
+                if (EnrolVar === "") {
+                    alert("Enrolment date is Required Value");
+                    $("#edate").focus();
+                    return "";
+                }
+                var jsonStrObj = {
+                    Id: IdVar,
+                    Name: NameVar,
+                    Class: classVar,
+                    BirthDate:BirthVar,
+                    Address:AddVar,
+                    Enrolment:EnrolVar,
+                };
+                return JSON.stringify(jsonStrObj);
+            }
+
+            // This method is used to create PUT Json request.
+            function createPUTRequest(connToken, jsonObj, dbName, relName) {
+                var putRequest = "{\n"
+                        + "\"token\" : \""
+                        + connToken
+                        + "\","
+                        + "\"dbName\": \""
+                        + dbName
+                        + "\",\n" + "\"cmd\" : \"PUT\",\n"
+                        + "\"rel\" : \""
+                        + relName + "\","
+                        + "\"jsonStr\": \n"
+                        + jsonObj
+                        + "\n"
+                        + "}";
+                return putRequest;
+            }
+
+            function executeCommand(reqString, dbBaseUrl, apiEndPointUrl) {
+                var url = dbBaseUrl + apiEndPointUrl;
+                var jsonObj;
+                $.post(url, reqString, function (result) {
+                    jsonObj = JSON.parse(result);
+                }).fail(function (result) {
+                    var dataJsonObj = result.responseText;
+                    jsonObj = JSON.parse(dataJsonObj);
+                });
+                return jsonObj;
+            }
+            
+            function resetForm() {
+                $("#Id").val("");
+                $("#Name").val("");
+                $("#class").val("");
+                $("#Bdate").val("");
+                 $("#Add").val("");
+                  $("#edate").val("");
+            }
+
+
+            function saveEmployee() {
+
+                var jsonStr = validateAndGetFormData();
+                if (jsonStr === "") {
+                    return;
+                }
+
+                var putReqStr = createPUTRequest("90932369|-31949271691881685|90953972",
+                        jsonStr, "SCHOOL-DB", "Student-REL");
+
+                alert(putReqStr);
+                jQuery.ajaxSetup({async: false});
+                var resultObj = executeCommand(putReqStr,
+                        "http://api.login2explore.com:5577", "/api/iml");
+                jQuery.ajaxSetup({async: true});
+
+                alert(JSON.stringify(resultObj));
+
+                resetForm();
+            }
+        </script>
+
+    </body>
+</html>
